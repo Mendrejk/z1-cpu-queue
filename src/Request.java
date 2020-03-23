@@ -36,6 +36,10 @@ class Request {
         return appearanceTime;
     }
 
+    int getTimeLeft() {
+        return timeLeft;
+    }
+
     @Override
     public String toString() {
         return Integer.toString(completionTime);
