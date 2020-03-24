@@ -19,13 +19,13 @@ class Request {
         timeInQueue += time;
     }
 
-    void handle(int time) {
+    boolean handle(int time) {
         //can't subtract progress
         if (time < 0) {
             time = 0;
         }
-
         timeLeft -= time;
+        return timeLeft == 0;
     }
 
     int getCompletionTime() { // TODO: remove
@@ -42,6 +42,6 @@ class Request {
 
     @Override
     public String toString() {
-        return Integer.toString(completionTime);
+        return "completionTime: " + completionTime + ", appearanceTime: " + appearanceTime + ", timeLeft: " + timeLeft;
     }
 }
