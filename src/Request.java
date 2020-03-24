@@ -40,6 +40,10 @@ class Request {
         return timeLeft;
     }
 
+    int getTimeInQueue() {
+        return timeInQueue;
+    }
+
     @Override
     public String toString() {
         return "completionTime: " + completionTime + ", appearanceTime: " + appearanceTime + ", timeLeft: " + timeLeft;
