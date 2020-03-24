@@ -1,11 +1,9 @@
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-public class QueueFCFS {
+class QueueCPU {
     private ArrayList<Request> queue;
 
-    QueueFCFS() {
+    QueueCPU() {
         queue = new ArrayList<>();
     }
 
