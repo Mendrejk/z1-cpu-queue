@@ -48,4 +48,10 @@ class Request {
     public String toString() {
         return "completionTime: " + completionTime + ", appearanceTime: " + appearanceTime + ", timeLeft: " + timeLeft;
     }
+
+    public Request copy() {
+        int newCompletionTime = completionTime;
+        int newAppearanceTime = appearanceTime;
+        return new Request(newCompletionTime, newAppearanceTime);
+    }
 }
