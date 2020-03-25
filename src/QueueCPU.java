@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 class QueueCPU {
-    private ArrayList<Request> queue;
+    protected ArrayList<Request> queue;
 
     QueueCPU() {
         queue = new ArrayList<>();
@@ -16,6 +16,13 @@ class QueueCPU {
             return null;
         }
         return queue.remove(0);
+    }
+
+    Request peek() {
+        if (queue.isEmpty()) {
+            return null;
+        }
+        return queue.get(0);
     }
 
     boolean isEmpty() {
