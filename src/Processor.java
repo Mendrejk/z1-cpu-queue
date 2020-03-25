@@ -77,6 +77,7 @@ public class Processor {
                     addPendingRequests(queue, incomingRequests, elapsedTime);
 
                     // expropriation
+                    queue.sort();
                     if (!queue.isEmpty() && queue.peek().getTimeLeft() < current.getTimeLeft()) {
                         queue.add(current);
                         current = queue.poll();

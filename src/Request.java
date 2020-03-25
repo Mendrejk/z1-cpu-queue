@@ -46,7 +46,8 @@ class Request {
 
     @Override
     public String toString() {
-        return "completionTime: " + completionTime + ", appearanceTime: " + appearanceTime + ", timeLeft: " + timeLeft;
+        return "completionTime: " + completionTime + ", appearanceTime: " + appearanceTime + ", timeLeft: " + timeLeft +
+                ", timeInQueue: " + timeInQueue;
     }
 
     public Request copy() {

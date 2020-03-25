@@ -6,4 +6,8 @@ public class QueueSJF extends QueueCPU{
         queue.sort(Comparator.comparingInt(Request::getCompletionTime));
         return super.poll();
     }
+
+    void sort() {
+        queue.sort(Comparator.comparingInt(Request::getCompletionTime));
+    }
 }
