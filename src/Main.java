@@ -12,6 +12,7 @@ class Main {
 
         Processor.FCFS(deepCopyRequests(incomingRequests));
         Processor.SJF(deepCopyRequests(incomingRequests));
+        Processor.RR(deepCopyRequests(incomingRequests), 10);
     }
 
     private static ArrayList<Request> deepCopyRequests(ArrayList<Request> requests) {

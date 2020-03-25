@@ -53,7 +53,7 @@ public class Processor {
         int elapsedTime = 0;
         int totalTimeInQueue = 0;
         int longestTimeInQueue = Integer.MIN_VALUE;
-
+        int expropriationCount = 0;
         Request current = null;
 
         while(true) {
@@ -80,6 +80,7 @@ public class Processor {
                     if (!queue.isEmpty() && queue.peek().getTimeLeft() < current.getTimeLeft()) {
                         queue.add(current);
                         current = queue.poll();
+                        expropriationCount++;
                     }
 
                     if (!incomingRequests.isEmpty()) {
@@ -102,7 +103,84 @@ public class Processor {
             }
         }
         System.out.println("SJF: Processor ticks: " + elapsedTime + "\n Average time in queue: " +
-                totalTimeInQueue / HOW_MANY_REQUESTS + "\n Longest time in queue: " + longestTimeInQueue);
+                totalTimeInQueue / HOW_MANY_REQUESTS + "\n Longest time in queue: " + longestTimeInQueue +
+                "\n expropriations: " + expropriationCount);
+    }
+
+    static void RR(ArrayList<Request> incomingRequests, int serviceTime) {
+        QueueRR queue = new QueueRR();
+        final int HOW_MANY_REQUESTS = incomingRequests.size();
+        int elapsedTime = 0;
+        int totalTimeInQueue = 0;
+        int longestTimeInQueue = Integer.MIN_VALUE;
+        int switchCount = 0;
+        Request current = null;
+        int timeToNextRequest = 0;
+        boolean unfinishedHandle = false;
+        int currentServiceTime = 0;
+
+        while(true) {
+            if (queue.isEmpty()) {
+                if (incomingRequests.isEmpty()) {
+                    break;
+                } else {
+                    addPendingRequests(queue, incomingRequests, elapsedTime);
+                    timeToNextRequest = incomingRequests.get(0).getAppearanceTime() - elapsedTime;
+                    if (queue.isEmpty()) {
+                        elapsedTime += incomingRequests.get(0).getAppearanceTime() - elapsedTime;
+                    }
+                }
+            } else {
+                // queue not empty -> processing requests
+                while (!queue.isEmpty() || current != null) {
+                    if (!unfinishedHandle) {
+                        currentServiceTime = serviceTime;
+                    } else {
+                        currentServiceTime = serviceTime - currentServiceTime;
+                        unfinishedHandle = false;
+                    }
+                    if (!incomingRequests.isEmpty() && timeToNextRequest == 0) {
+                        addPendingRequests(queue, incomingRequests, elapsedTime);
+                        if (!incomingRequests.isEmpty()) {
+                            timeToNextRequest = incomingRequests.get(0).getAppearanceTime() - elapsedTime;
+                        } else {
+                            timeToNextRequest = Integer.MAX_VALUE;
+                        }
+                    }
+                    if (current == null) {
+                        current = queue.poll();
+                    }
+                    if (current.getTimeLeft() < currentServiceTime) {
+                        currentServiceTime = current.getTimeLeft();
+                    }
+                    if (timeToNextRequest < currentServiceTime) {
+                        currentServiceTime = timeToNextRequest;
+                        unfinishedHandle = true;
+                    }
+                    if (current.handle(currentServiceTime)) {
+                        totalTimeInQueue += current.getTimeInQueue();
+                        if (current.getTimeInQueue() > longestTimeInQueue) {
+                            longestTimeInQueue = current.getTimeInQueue();
+                        }
+                        current = null;
+                    }
+                    elapsedTime += currentServiceTime;
+                    timeToNextRequest -= currentServiceTime;
+                    if(!queue.isEmpty() && !unfinishedHandle) {
+                        queue.tickAll(currentServiceTime);
+                        // round-robin
+                        if (current != null) {
+                            queue.add(current);
+                        }
+                        current = queue.poll();
+                        switchCount++;
+                    }
+                }
+            }
+        }
+        System.out.println("RR: Processor ticks: " + elapsedTime + "\n Average time in queue: " +
+                totalTimeInQueue / HOW_MANY_REQUESTS + "\n Longest time in queue: " + longestTimeInQueue +
+                "\n switches: " + switchCount);
     }
 
     private static void addPendingRequests(QueueCPU queue, ArrayList<Request> incomingRequests, int elapsedTime) {

@@ -28,7 +28,7 @@ class Request {
         return timeLeft == 0;
     }
 
-    int getCompletionTime() { // TODO: remove
+    int getCompletionTime() {
         return completionTime;
     }
 
