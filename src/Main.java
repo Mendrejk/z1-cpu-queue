@@ -10,7 +10,16 @@ class Main {
         ArrayList<Request> incomingRequests = new ArrayList<>(Arrays.asList(requests));
         incomingRequests.sort(Comparator.comparingInt(Request::getAppearanceTime));
 
-        Processor.FCFS(incomingRequests);
+        Processor.FCFS(deepCopyRequests(incomingRequests));
+        Processor.SJF(deepCopyRequests(incomingRequests));
+    }
+
+    private static ArrayList<Request> deepCopyRequests(ArrayList<Request> requests) {
+        ArrayList<Request> copy = new ArrayList<>();
+        for (Request request : requests) {
+            copy.add(request.copy());
+        }
+        return copy;
     }
 }
 
