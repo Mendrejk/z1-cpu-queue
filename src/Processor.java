@@ -74,21 +74,23 @@ class Processor {
                 }
             } else {
                 // queue not empty -> processing requests
+                if (!incomingRequests.isEmpty()) {
+                    addPendingRequests(queue, incomingRequests, elapsedTime);
+                }
                 // expropriation
-                queue.sort();
-                if (!queue.isEmpty() && queue.peek().getTimeLeft() < current.getTimeLeft()) {
-                    queue.add(current);
-                    current = queue.poll();
-                    expropriationCount++;
+                if (!queue.isEmpty()) {
+                    queue.sort();
+                    if (queue.peek().getTimeLeft() < current.getTimeLeft()) {
+                        queue.add(current);
+                        current = queue.poll();
+                        expropriationCount++;
+                    }
                 }
 
                 int timeToFirstEvent = current.getTimeLeft();
-                if (!incomingRequests.isEmpty()) {
-                    addPendingRequests(queue, incomingRequests, elapsedTime);
 
-                    if (!incomingRequests.isEmpty() && timeToFirstEvent > incomingRequests.get(0).getAppearanceTime() - elapsedTime) {
-                        timeToFirstEvent = incomingRequests.get(0).getAppearanceTime() - elapsedTime;
-                    }
+                if (!incomingRequests.isEmpty() && timeToFirstEvent > incomingRequests.get(0).getAppearanceTime() - elapsedTime) {
+                    timeToFirstEvent = incomingRequests.get(0).getAppearanceTime() - elapsedTime;
                 }
 
                 if (current.handle(timeToFirstEvent)) {
@@ -156,7 +158,7 @@ class Processor {
                     if (current.getTimeLeft() < currentServiceTime) {
                         currentServiceTime = current.getTimeLeft();
                     }
-                    if (timeToNextRequest < currentServiceTime) {
+                    if (timeToNextRequest < currentServiceTime && !incomingRequests.isEmpty()) {
                         currentServiceTime = timeToNextRequest;
                         unfinishedHandle = true;
                     }
@@ -169,7 +171,7 @@ class Processor {
                     }
                     elapsedTime += currentServiceTime;
                     timeToNextRequest -= currentServiceTime;
-                    if(!queue.isEmpty() && !unfinishedHandle) {
+                    if (!queue.isEmpty() && !unfinishedHandle) {
                         queue.tickAll(currentServiceTime);
                         // round-robin
                         if (current != null) {
