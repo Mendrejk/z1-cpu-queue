@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Processor {
+class Processor {
     static void FCFS(ArrayList<Request> incomingRequests) {
         QueueCPU queue = new QueueCPU();
         final int HOW_MANY_REQUESTS = incomingRequests.size();
@@ -17,6 +17,7 @@ public class Processor {
                     } else {
                         addPendingRequests(queue, incomingRequests, elapsedTime);
                         if (queue.isEmpty()) {
+                            // queue is empty, so time has to be fast-forwarded to next request
                             elapsedTime += incomingRequests.get(0).getAppearanceTime() - elapsedTime;
                         }
                     }
@@ -64,6 +65,7 @@ public class Processor {
                     } else {
                         addPendingRequests(queue, incomingRequests, elapsedTime);
                         if (queue.isEmpty()) {
+                            // queue is empty, so time has to be fast-forwarded to next request
                             elapsedTime += incomingRequests.get(0).getAppearanceTime() - elapsedTime;
                         }
                     }
@@ -72,24 +74,21 @@ public class Processor {
                 }
             } else {
                 // queue not empty -> processing requests
-                int timeToFirstEvent = Integer.MAX_VALUE;
+                // expropriation
+                queue.sort();
+                if (!queue.isEmpty() && queue.peek().getTimeLeft() < current.getTimeLeft()) {
+                    queue.add(current);
+                    current = queue.poll();
+                    expropriationCount++;
+                }
+
+                int timeToFirstEvent = current.getTimeLeft();
                 if (!incomingRequests.isEmpty()) {
                     addPendingRequests(queue, incomingRequests, elapsedTime);
 
-                    // expropriation
-                    queue.sort();
-                    if (!queue.isEmpty() && queue.peek().getTimeLeft() < current.getTimeLeft()) {
-                        queue.add(current);
-                        current = queue.poll();
-                        expropriationCount++;
-                    }
-
-                    if (!incomingRequests.isEmpty()) {
+                    if (!incomingRequests.isEmpty() && timeToFirstEvent > incomingRequests.get(0).getAppearanceTime() - elapsedTime) {
                         timeToFirstEvent = incomingRequests.get(0).getAppearanceTime() - elapsedTime;
                     }
-                }
-                if (current.getTimeLeft() < timeToFirstEvent) {
-                    timeToFirstEvent = current.getTimeLeft();
                 }
 
                 if (current.handle(timeToFirstEvent)) {
@@ -126,8 +125,11 @@ public class Processor {
                     break;
                 } else {
                     addPendingRequests(queue, incomingRequests, elapsedTime);
-                    timeToNextRequest = incomingRequests.get(0).getAppearanceTime() - elapsedTime;
+                    if (!incomingRequests.isEmpty()) {
+                        timeToNextRequest = incomingRequests.get(0).getAppearanceTime() - elapsedTime;
+                    }
                     if (queue.isEmpty()) {
+                        // queue is empty, so time has to be fast-forwarded to next request
                         elapsedTime += incomingRequests.get(0).getAppearanceTime() - elapsedTime;
                     }
                 }
@@ -185,7 +187,7 @@ public class Processor {
     }
 
     private static void addPendingRequests(QueueCPU queue, ArrayList<Request> incomingRequests, int elapsedTime) {
-        if (incomingRequests.get(0).getAppearanceTime() <= elapsedTime) {
+        while (!incomingRequests.isEmpty() && incomingRequests.get(0).getAppearanceTime() <= elapsedTime) {
             queue.add(incomingRequests.get(0));
             incomingRequests.remove(0);
         }
