@@ -6,7 +6,7 @@ class Main {
     private static final int HOW_MANY_REQUESTS = 100000;
     public static void main(String[] args) {
         // generate requests
-        Request[] requests = RequestGenerator.generateLowWeighted(HOW_MANY_REQUESTS, 1, 100);
+        Request[] requests = FileInput.chooseDataSet(HOW_MANY_REQUESTS, 1, 100);
         ArrayList<Request> incomingRequests = new ArrayList<>(Arrays.asList(requests));
         incomingRequests.sort(Comparator.comparingInt(Request::getAppearanceTime));
 
@@ -22,5 +22,7 @@ class Main {
         }
         return copy;
     }
+
+
 }
 
