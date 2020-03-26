@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 class QueueCPU {
-    protected ArrayList<Request> queue;
+    ArrayList<Request> queue;
 
     QueueCPU() {
         queue = new ArrayList<>();

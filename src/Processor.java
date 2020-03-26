@@ -110,7 +110,7 @@ class Processor {
     }
 
     static void RR(ArrayList<Request> incomingRequests, int serviceTime) {
-        QueueRR queue = new QueueRR();
+        QueueCPU queue = new QueueCPU();
         final int HOW_MANY_REQUESTS = incomingRequests.size();
         int elapsedTime = 0;
         int totalTimeInQueue = 0;
