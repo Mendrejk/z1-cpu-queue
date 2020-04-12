@@ -1,7 +1,10 @@
 import java.util.ArrayList;
 
 class Processor {
-    static void FCFS(ArrayList<Request> incomingRequests) {
+    // the same code with more or less variation repeats itself thrice here, as I could not come up with
+    // any better solution for this - trying to isolate and wrap identical parts of code into methods leads to a lot
+    // of function arguments (5+). Is this the way to go still?
+    static int[] FCFS(ArrayList<Request> incomingRequests) {
         QueueCPU queue = new QueueCPU();
         final int HOW_MANY_REQUESTS = incomingRequests.size();
         int elapsedTime = 0;
@@ -44,11 +47,10 @@ class Processor {
                 queue.tickAll(timeToFirstEvent);
             }
         }
-        System.out.println("FCFS: Processor ticks: " + elapsedTime + "\n Average time in queue: " +
-                totalTimeInQueue / HOW_MANY_REQUESTS + "\n Longest time in queue: " + longestTimeInQueue);
+        return new int[] { elapsedTime, totalTimeInQueue / HOW_MANY_REQUESTS, longestTimeInQueue };
     }
 
-    static void SJF(ArrayList<Request> incomingRequests) {
+    static int[] SJF(ArrayList<Request> incomingRequests) {
         QueueSJF queue = new QueueSJF();
         final int HOW_MANY_REQUESTS = incomingRequests.size();
         int elapsedTime = 0;
@@ -104,12 +106,10 @@ class Processor {
                 queue.tickAll(timeToFirstEvent);
             }
         }
-        System.out.println("SJF: Processor ticks: " + elapsedTime + "\n Average time in queue: " +
-                totalTimeInQueue / HOW_MANY_REQUESTS + "\n Longest time in queue: " + longestTimeInQueue +
-                "\n expropriations: " + expropriationCount);
+        return new int[] { elapsedTime, totalTimeInQueue / HOW_MANY_REQUESTS, longestTimeInQueue, expropriationCount };
     }
 
-    static void RR(ArrayList<Request> incomingRequests, int serviceTime) {
+    static int[] RR(ArrayList<Request> incomingRequests, int serviceTime) {
         QueueCPU queue = new QueueCPU();
         final int HOW_MANY_REQUESTS = incomingRequests.size();
         int elapsedTime = 0;
@@ -183,9 +183,7 @@ class Processor {
                 }
             }
         }
-        System.out.println("RR: Processor ticks: " + elapsedTime + "\n Average time in queue: " +
-                totalTimeInQueue / HOW_MANY_REQUESTS + "\n Longest time in queue: " + longestTimeInQueue +
-                "\n switches: " + switchCount);
+        return new int[] { elapsedTime, totalTimeInQueue / HOW_MANY_REQUESTS, longestTimeInQueue, switchCount };
     }
 
     private static void addPendingRequests(QueueCPU queue, ArrayList<Request> incomingRequests, int elapsedTime) {
